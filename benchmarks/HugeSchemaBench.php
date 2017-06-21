@@ -35,6 +35,16 @@ class HugeSchemaBench
      */
     private $smallQuery;
 
+    /**
+     * @var string
+     */
+    private $largeQuery;
+
+    /**
+     * @var string
+     */
+    private $fullQuery;
+
     public function setUp()
     {
         $this->schemaBuilder = new SchemaGenerator([
@@ -50,9 +60,11 @@ class HugeSchemaBench
         $this->descriptor = $this->schema->getDescriptor();
         $this->smallQuery = $smallQueryBuilder->buildQuery();
 
-        $largeQueryBuilder = new QueryGenerator($this->schema,.5);
+        $largeQueryBuilder = new QueryGenerator($this->schema, .5);
         $this->largeQuery = $largeQueryBuilder->buildQuery();
 
+        $fullQueryBuilder = new QueryGenerator($this->schema, 1);
+        $this->fullQuery = $fullQueryBuilder->buildQuery();
     }
 
     public function benchSchema()
@@ -86,6 +98,17 @@ class HugeSchemaBench
     {
         $schema = $this->createLazySchema();
         $result = GraphQL::execute($schema, $this->largeQuery);
+    }
+
+    public function benchFullQuery()
+    {
+      $result = GraphQL::execute($this->schema, $this->fullQuery);
+    }
+
+    public function benchFullQueryLazy()
+    {
+      $schema = $this->createLazySchema();
+      $result = GraphQL::execute($schema, $this->fullQuery);
     }
 
     private function createLazySchema()

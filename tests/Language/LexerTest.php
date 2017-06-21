@@ -177,6 +177,20 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             'value' => 'unicode яуц'
         ], (array) $this->lexOne('"unicode яуц"'));
 
+      $this->assertArraySubset([
+            'kind' => Token::STRING,
+            'start' => 0,
+            'end' => 11,
+            'value' => 'unicode 𐍈'
+        ], (array) $this->lexOne('"unicode 𐍈"'));
+
+      $this->assertArraySubset([
+            'kind' => Token::STRING,
+            'start' => 0,
+            'end' => 11,
+            'value' => 'unicode €'
+        ], (array) $this->lexOne('"unicode €"'));
+
         $unicode = json_decode('"\u1234\u5678\u90AB\uCDEF"');
         $this->assertArraySubset([
             'kind' => Token::STRING,
