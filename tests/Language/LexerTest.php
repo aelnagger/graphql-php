@@ -235,6 +235,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $run(12, '"bad \\uXXXX esc"', "Syntax Error GraphQL (1:7) Invalid character escape sequence: \\uXXXX\n\n1: \"bad \\uXXXX esc\"\n         ^\n");
         $run(13, '"bad \\uFXXX esc"', "Syntax Error GraphQL (1:7) Invalid character escape sequence: \\uFXXX\n\n1: \"bad \\uFXXX esc\"\n         ^\n");
         $run(14, '"bad \\uXXXF esc"', "Syntax Error GraphQL (1:7) Invalid character escape sequence: \\uXXXF\n\n1: \"bad \\uXXXF esc\"\n         ^\n");
+        $run(15, '"No end quote unicode яуц', "Syntax Error GraphQL (1:26) Unterminated string.\n\n1: \"No end quote unicode яуц\n                            ^\n");
     }
 
     /**
@@ -484,6 +485,9 @@ class LexerTest extends \PHPUnit_Framework_TestCase
       object (name: "string") {
         anotherField
       }
+      ... on Dog {
+        barkVolume
+      }
     }'));
 
         $expectedTokens = [
@@ -500,8 +504,14 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             ['kind' => Token::BRACE_L, 'start' => 59, 'end' => 60, 'line' => 4, 'value' => null],
             ['kind' => Token::NAME, 'start' => 69, 'end' => 81, 'line' => 5, 'value' => 'anotherField'],
             ['kind' => Token::BRACE_R, 'start' => 88, 'end' => 89, 'line' => 6, 'value' => null],
-            ['kind' => Token::BRACE_R, 'start' => 94, 'end' => 95, 'line' => 7, 'value' => null],
-            ['kind' => Token::EOF, 'start' => 95, 'end' => 95, 'line' => 7, 'value' => null]
+            ['kind' => Token::SPREAD, 'start' => 96, 'end' => 99, 'line' => 7, 'value' => null],
+            ['kind' => Token::NAME, 'start' => 100, 'end' => 102, 'line' => 7, 'value' => 'on'],
+            ['kind' => Token::NAME, 'start' => 103, 'end' => 106, 'line' => 7, 'value' => 'Dog'],
+            ['kind' => Token::BRACE_L, 'start' => 107, 'end' => 108, 'line' => 7, 'value' => null],
+            ['kind' => Token::NAME, 'start' => 117, 'end' => 127, 'line' => 8, 'value' => 'barkVolume'],
+            ['kind' => Token::BRACE_R, 'start' => 134, 'end' => 135, 'line' => 9, 'value' => null],
+            ['kind' => Token::BRACE_R, 'start' => 140, 'end' => 141, 'line' => 10, 'value' => null],
+            ['kind' => Token::EOF, 'start' => 141, 'end' => 141, 'line' => 10, 'value' => null]
         ];
 
         foreach ($expectedTokens as $expectedToken) {

@@ -11,11 +11,6 @@ class Source
     public $body;
 
     /**
-     * @var array
-     */
-    public $buf;
-
-    /**
      * @var int
      */
     public $length;
@@ -33,51 +28,7 @@ class Source
         );
 
         $this->body = $body;
-
-        $buf = [];
-
-        $i = 0;
-
-        // Check for a UTF-8 BOM
-        if (strlen($body) > 2
-                   && ord($body[0]) == 0xEF
-                   && ord($body[1]) == 0xBB
-                   && ord($body[2]) == 0xBF) {
-          $buf[] = 0xFEFF;
-          $i = 3;
-        }
-
-        for(; $i < strlen($body);) {
-          $byte = ord($body[$i]);
-          $ord = 0;
-
-          if ($byte < 0x80) {
-            $ord = ord($body[$i++]);
-          }
-
-          elseif (($byte & 0xE0) === 0xC0 ) {
-            $ord =  (ord($body[$i++]) & 0x1F) << 6;
-            $ord |= (ord($body[$i++]) & 0x3F);
-          }
-
-          elseif (($byte & 0xF0) === 0xE0 ) {
-            $ord =  (ord($body[$i++]) & 0x0F) << 12;
-            $ord |= (ord($body[$i++]) & 0x3F) << 6;
-            $ord |= (ord($body[$i++]) & 0x3F);
-          }
-
-          elseif (($byte & 0xF8) === 0xF0 ) {
-            $ord =  (ord($body[$i++]) & 0x07) << 18;
-            $ord |= (ord($body[$i++]) & 0x3F) << 12;
-            $ord |= (ord($body[$i++]) & 0x3F) << 6;
-            $ord |= (ord($body[$i++]) & 0x3F);
-          }
-
-          $buf[] = $ord;
-        }
-
-        $this->buf =  $buf;
-        $this->length = count($this->buf);
+        $this->length = strlen($body);
         $this->name = $name ?: 'GraphQL';
     }
 
