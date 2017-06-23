@@ -17,6 +17,18 @@ use GraphQL\Utils;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
+  /**
+   * @it parses large inputs.
+   */
+    public function testParsesLargeFiles() {
+      $file = fopen('giant.graphql', 'r');
+      $input = fread($file, filesize('giant.graphql'));
+
+      Parser::parse($input);
+
+      self::assertEquals(true, true);
+    }
+
     /**
      * @it parse provides useful errors
      */
